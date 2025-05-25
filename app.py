@@ -1,8 +1,7 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 import pandas as pd
 import os
 import json
-from flask import jsonify
 
 app = Flask(__name__)
 
@@ -12,14 +11,18 @@ app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 
 @app.route('/')
-def data():
-    # read csv file
-    path = os.path.join(app.root_path, 'data', 'data.csv')
-    df = pd.read_csv(path)
+def index():
+    return render_template("index.html")
 
-    # convert to JSON
-    data_json = json.dumps(df.to_dict(orient='records'))
-    return render_template("index.html", data=data_json)
+
+@app.route('/pokemon-data')
+def pokemon_data():
+    path = os.path.join(app.root_path, 'data', 'pokemon.csv')
+    df = pd.read_csv(path)
+    df.columns = df.columns.str.strip()  # ensure no leading/trailing spaces
+    df = df.fillna("")
+    return jsonify(df.to_dict(orient='records'))
+
 
 
 if __name__ == '__main__':
