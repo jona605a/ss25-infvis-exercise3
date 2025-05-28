@@ -19,9 +19,24 @@ def index():
 def pokemon_data():
     path = os.path.join(app.root_path, 'data', 'pokemon.csv')
     df = pd.read_csv(path)
-    df.columns = df.columns.str.strip()  # ensure no leading/trailing spaces
+    df.columns = df.columns.str.strip()
     df = df.fillna("")
     return jsonify(df.to_dict(orient='records'))
+
+@app.route('/pokemon-types')
+def pokemon_types():
+    # Read the pokemon.csv file, count the occurrences of each type, and return the counts as JSON
+    path = os.path.join(app.root_path, 'data', 'pokemon.csv')
+    df = pd.read_csv(path)
+    df.columns = df.columns.str.strip()
+    type_counts = df['type1'].value_counts().to_dict()
+    for type, count in df['type2'].value_counts().to_dict().items():
+        if type in type_counts:
+            type_counts[type] += count
+        else:
+            type_counts[type] = count
+    type_counts = {k.capitalize(): v for k, v in type_counts.items()}
+    return jsonify(type_counts)
 
 
 
