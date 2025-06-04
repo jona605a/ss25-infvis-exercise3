@@ -109,3 +109,66 @@ Each `area` object inside `areas` has:
 - Use area names to highlight and query regions on the map.
 - Filter Pokémon by encounter method, version, or condition.
 - Link `pokemon_id` to stats from the Pokémon database.
+
+
+# Kanto Pokémon Data (Generation I)
+
+This dataset contains detailed information for all Generation I Pokémon (National Pokédex #001–151), sourced from the [PokeAPI](https://pokeapi.co). It is intended for frontend use.
+
+---
+
+## Structure of Each Pokémon Entry
+
+Each entry in the dataset (`kanto_pokemon_data.json`) is a JSON object with the following structure:
+
+```json
+{
+  "id": 25,
+  "name": "pikachu",
+  "types": ["electric"],
+  "base_stats": {
+    "hp": 35,
+    "attack": 55,
+    "defense": 40,
+    "special-attack": 50,
+    "special-defense": 50,
+    "speed": 90
+  },
+  "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png",
+  "height": 4,
+  "weight": 60
+}
+```
+
+---
+
+## Field Explanations
+
+| Field         | Description                                                                 |
+|---------------|-----------------------------------------------------------------------------|
+| `id`          | National Pokédex number (1–151)                                              |
+| `name`        | Lowercase English name                                                      |
+| `types`       | List of Pokémon types (can be one or two, e.g., `["fire", "flying"]`)       |
+| `base_stats`  | Object containing base stats for standard battle attributes                 |
+| `sprite`      | URL to default front-facing sprite from PokeAPI                             |
+| `height`      | Pokémon's height (in decimetres)                                             |
+| `weight`      | Pokémon's weight (in hectograms)                                             |
+
+---
+
+## Compatibility with Encounter Data
+
+Each Pokémon `id` and `name` field directly corresponds to entries in the `kanto_location_data.json` file, making it easy to link encounter data with full Pokémon details in the frontend.
+
+---
+
+## Update Instructions
+
+To regenerate the data:
+
+1. Run the script: `generate_pokemon_data.py`
+2. Output is saved to: `static/kanto_pokemon_data.json`
+
+Ensure the `BASE_URL` is available and not rate-limited.
+
+---
