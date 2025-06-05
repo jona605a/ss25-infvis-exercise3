@@ -31,10 +31,12 @@
                 <select id="indicator_change" class="dropdown"></select>
             </div>-->
 
+            <div id="radar_chart"></div>
+
             <div id="svg_line_plot" class="svg_line_plot"></div>
         </div>
     </div>
-
+    <script src="{{url_for('static', filename='js/radar_chart.js')}}"></script>
     <script src="{{url_for('static', filename='js/type_hist.js')}}"></script>
 
   <script>
@@ -49,14 +51,43 @@
         "vertania": "viridian-city",
         "zinnober": "cinnabar-island",
         "orania": "vermilion-city",
-        "lavandia": "lavender-town"
+        "lavandia": "lavender-town",
+        "zinnoberinsel": "cinnabar-island",
+        "route1": "kanto-route-1",
+        "route2": "kanto-route-2",
+        "route3": "kanto-route-3",
+        "route4": "kanto-route-4",
+        "route5": "kanto-route-5",
+        "route6": "kanto-route-6",
+        "route7": "kanto-route-7",
+        "route8": "kanto-route-8",
+        "route9": "kanto-route-9",
+        "route10": "kanto-route-10",
+        "route11": "kanto-route-11",
+        "route12": "kanto-route-12",
+        "route13": "kanto-route-13",
+        "route14": "kanto-route-14",
+        "route15": "kanto-route-15",
+        "route16": "kanto-route-16",
+        "route17": "kanto-route-17",
+        "route18": "kanto-route-18",
+        "route19": "kanto-sea-route-19",
+        "route20": "kanto-sea-route-20",
+        "route21": "kanto-sea-route-21",
+        "route22": "kanto-route-22",
+        "route23": "kanto-route-23",
+        "route24": "kanto-route-24",
+        "route25": "kanto-route-25",
+        "route26": "kanto-route-26",
+        "route27": "kanto-route-27",
+        "route28": "kanto-route-28",
     };
 
     let locationData = {};
     let pokemonData = {};
 
     Promise.all([
-        d3.json("/static/kanto_location_data.json"),
+        d3.json("/merged-kanto-locations"),
         d3.json("/static/kanto_pokemon_data.json")
     ]).then(([loc, poke]) => {
         locationData = loc;
@@ -111,6 +142,12 @@
 
         if (p && p.sprite) {
             li.html(`<img src="${p.sprite}" width="32" height="32"> ${p.name}`);
+            li.style("cursor", "pointer")
+            // on click show radar chart
+                .on("click", () => {
+                    console.log("Clicked:", p.name); // TODO remove later
+                    drawRadarChart(p);
+                });
         } else {
             li.text(name);
         }
