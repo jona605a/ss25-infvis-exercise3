@@ -155,20 +155,3 @@ Each entry in the dataset (`kanto_pokemon_data.json`) is a JSON object with the 
 | `weight`      | Pokémon's weight (in hectograms)                                             |
 
 ---
-
-## Compatibility with Encounter Data
-
-Each Pokémon `id` and `name` field directly corresponds to entries in the `kanto_location_data.json` file, making it easy to link encounter data with full Pokémon details in the frontend.
-
----
-
-## Update Instructions
-
-To regenerate the data:
-
-1. Run the script: `generate_pokemon_data.py`
-2. Output is saved to: `static/kanto_pokemon_data.json`
-
-Ensure the `BASE_URL` is available and not rate-limited.
-
----

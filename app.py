@@ -38,6 +38,15 @@ def pokemon_types():
     type_counts = {k.capitalize(): v for k, v in type_counts.items()}
     return jsonify(type_counts)
 
+@app.route("api/pokemon/<int:pokemon_id>")
+def pokemon(pokemon_id):
+    # read json file
+    with open("static/kanto_pokemon_data.json") as f:
+        data = json.load(f)
+    
+    # get pokemon that matches id ; if no match return empty
+    pokemon = next((p for p in data if p["id"] == pokemon_id), None)
+    return jsonify(pokemon or {})
 
 
 if __name__ == '__main__':
