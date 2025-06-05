@@ -31,10 +31,12 @@
                 <select id="indicator_change" class="dropdown"></select>
             </div>-->
 
+            <div id="radar_chart"></div>
+
             <div id="svg_line_plot" class="svg_line_plot"></div>
         </div>
     </div>
-
+    <script src="{{url_for('static', filename='js/radar_chart.js')}}"></script>
     <script src="{{url_for('static', filename='js/type_hist.js')}}"></script>
 
   <script>
@@ -140,6 +142,12 @@
 
         if (p && p.sprite) {
             li.html(`<img src="${p.sprite}" width="32" height="32"> ${p.name}`);
+            li.style("cursor", "pointer")
+            // on click show radar chart
+                .on("click", () => {
+                    console.log("Clicked:", p.name); // TODO remove later
+                    drawRadarChart(p);
+                });
         } else {
             li.text(name);
         }
