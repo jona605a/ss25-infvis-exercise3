@@ -23,21 +23,19 @@ function drawRadarChart(pokemon) {
 
     // Create wrapper div for layout TODO @kho: styling in css?
     const wrapper = container.append("div")
-        .style("display", "flex")
-        .style("align-items", "center")
-        .style("gap", "20px");
+        .attr("class", "base_stat_pokemon_sprite");
 
     // Add sprite image TODO @kho constants
     wrapper.append("img")
         .attr("src", pokemon.sprite)
-        .attr("width", 96)
-        .attr("height", 96)
-        .attr("alt", pokemon.name);
+        .attr("alt", pokemon.name)
+        .attr("class", "base_stat_pokemon_sprite");
 
     // Add SVG inside the wrapper
     const svg = wrapper.append("svg")
         .attr("width", width)
-        .attr("height", height);
+        .attr("height", height)
+        .attr("class", "base_stat_radar_svg");
 
 
     const g = svg.append("g")

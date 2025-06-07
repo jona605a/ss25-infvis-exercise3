@@ -156,3 +156,18 @@ text.title {
     opacity: 0;
     transition: opacity 0.2s ease;
   }
+
+  .base_stat_wrapper {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .base_stat_pokemon_sprite {
+    width: 96px;
+    height: 96px;
+  }
+
+  .base_stat_radar_svg {
+    flex-shrink: 0;
+  }
