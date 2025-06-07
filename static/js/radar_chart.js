@@ -1,7 +1,4 @@
-
 function drawRadarChart(pokemon) {
-
-    // check
     if (!pokemon || !pokemon.base_stats) {
         console.warn("No stats found for", pokemon);
         return;
@@ -21,74 +18,81 @@ function drawRadarChart(pokemon) {
     const container = d3.select("#radar_chart");
     container.html("");
 
-    // Create wrapper div for layout TODO @kho: styling in css?
+    // Wrapper div with background
     const wrapper = container.append("div")
-        .attr("class", "base_stat_pokemon_sprite");
+        .attr("class", "base_stat_wrapper");
 
-    // Add sprite image TODO @kho constants
-    wrapper.append("img")
+    // Pokémon main info
+    const profile = wrapper.append("div")
+        .attr("class", "base_stat_pokemon_profile")
+
+    profile.append("span")
+        .attr("class", "base_stat_pokemon_id")
+        .text(`#${pokemon.id.toString().padStart(3, "0")}`)
+
+    profile.append("h2")
+        .attr("class", "base_stat_pokemon_name")
+        .text(pokemon.name.toUpperCase())
+
+    // Pokémon sprite
+    profile.append("img")
         .attr("src", pokemon.sprite)
         .attr("alt", pokemon.name)
         .attr("class", "base_stat_pokemon_sprite");
 
-    // Add SVG inside the wrapper
+    // Radar SVG
     const svg = wrapper.append("svg")
         .attr("width", width)
         .attr("height", height)
         .attr("class", "base_stat_radar_svg");
-
-
+        
     const g = svg.append("g")
         .attr("transform", `translate(${width / 2}, ${height / 2})`);
 
-    // set up radial grid using d3-polygon 
+    // Radial grid
     for (let i = 1; i <= levels; i++) {
         const r = (radius / levels) * i;
         g.append("polygon")
             .attr("points", stats.map((_, j) => {
                 const angle = angleSlice * j;
-                return [ Math.cos(angle) * r, Math.sin(angle) * r].join(",");
+                return [Math.cos(angle) * r, Math.sin(angle) * r].join(",");
             }).join(" "))
             .attr("fill", "none")
-            .attr("stroke", "#ccc");
+            .attr("stroke", "var(--color-border)");
     }
 
-    // set up axes for each base stat
+    // Axes + labels
     stats.forEach(([stat, _], i) => {
         const angle = angleSlice * i;
 
-        // draw axis
         g.append("line")
             .attr("x1", 0)
             .attr("y1", 0)
             .attr("x2", Math.cos(angle) * radius)
             .attr("y2", Math.sin(angle) * radius)
-            .attr("stroke", "#999")
+            .attr("stroke", "var(--color-dark)");
 
-        // draw stat name text
         g.append("text")
-            .attr("x", Math.cos(angle) * (radius + 10))
-            .attr("y", Math.sin(angle) * (radius + 10))
+            .attr("x", Math.cos(angle) * (radius + 12))
+            .attr("y", Math.sin(angle) * (radius + 12))
             .attr("text-anchor", "middle")
             .attr("font-size", "10px")
-            .text(stat)
-    })
+            .attr("fill", "var(--color-text)")
+            .attr("font-family", "var(--font-body)")
+            .text(stat);
+    });
 
-    // data polygon
-    points = stats.map(([_, value], i) => {
+    // Data polygon
+    const maxValue = d3.max(stats, ([, value]) => +value);
+    const points = stats.map(([_, value], i) => {
         const angle = angleSlice * i;
-        const maxValue = d3.max(stats, ([, value]) => +value); // find max stat value TODO @kho this is based on max stat of one pokemon -> global?
-        const v = (+value) / maxValue * radius; // scale based on max stat
-        return [
-            Math.cos(angle) * v,
-            Math.sin(angle) * v
-        ].join(",");
+        const scaled = (+value) / maxValue * radius;
+        return [Math.cos(angle) * scaled, Math.sin(angle) * scaled].join(",");
     }).join(" ");
 
     g.append("polygon")
         .attr("points", points)
-        .attr("fill", "steelblue")
-        .attr("stroke", "black")
+        .attr("fill", "var(--color-button)")
+        .attr("stroke", "var(--color-dark)")
         .attr("fill-opacity", 0.6);
 }
-

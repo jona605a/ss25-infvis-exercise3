@@ -1,81 +1,164 @@
-:root{
-    --division_width: 400px;
+:root {
+  --division_width: 400px;
+
+  /* fonts */
+  --font-heading: 'Press Start 2P', monospace;
+  --font-body: 'Space Mono', monospace;
+
+  /* color palette */
+  --color-primary: #5F7A57;           /* Forest Green */
+  --color-accent: #D17C6A;            /* Dusty Rose */
+  --color-highlight: #E6B85C;         /* Mustard Yellow */
+  --color-muted: #CFC7AC;             /* Khaki Beige */
+  --color-surface: #A7B56B;           /* Washed Sage */
+  --color-surface-alt: #e9e5c9;       /* Pale Parchment */
+  --color-background: #EFD6A7;        /* Vintage Beige */
+  --color-dark: #2B3B3E;              /* Charcoal Blue */
+
+  /* theming */
+  --color-text: var(--color-dark);
+  --color-heading: var(--color-primary);
+  --color-link: #386C74;              /* Vintage Teal */
+  --color-link-hover: #3C5AA6;        /* Pokémon Blue */
+  --color-border: var(--color-primary);
+  --color-card: var(--color-surface);
+  --color-button: var(--color-accent);
+  --color-button-hover: var(--color-highlight);
+  --color-danger: #3C243D;            /* Eggplant */
+  --color-warning: #FFCB05;           /* Pokémon Yellow */
 }
 
+/* ========== Global Layout ========== */
 
-    html, body {
-        height: 100%;
-        margin: 0;
-        font-family: sans-serif;
-        background-color: #f4f4f4;
-    }
-
-    h1 {
-        text-align: center;
-        margin-top: 20px;
-    }
-
-    .dashboard {
-        display: flex;
-        flex-direction: row;
-        gap: 20px;
-        padding: 20px;
-        height: calc(100vh - 100px); /* Vollbild ohne Header */
-        box-sizing: border-box;
-    }
-
-    .left-panel, .right-panel {
-        flex: 1;
-        background-color: white;
-        border-radius: 12px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        display: flex;
-        flex-direction: column;
-        padding: 20px;
-        box-sizing: border-box;
-        overflow: hidden;
-    }
-
-    .svg_wrapper {
-        flex: 1;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .svg_wrapper svg {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-    }
-
-    .dd_container {
-        margin-top: 20px;
-    }
-
-    #histogram, #svg_line_plot {
-        flex-shrink: 0;
-        margin-top: 20px;
-    }
-
-    select.dropdown {
-        width: 100%;
-        padding: 5px;
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: var(--font-body);
+  background-color: var(--color-background);
+  color: var(--color-text);
 }
 
-.label{
-    font-size: small;
+h1, h2, h3, .heading, .title {
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-heading);
+  text-shadow: 1px 1px var(--color-muted);
+}
+h1 {
+  font-size: 16px;
+  margin: 1.5rem 0;
+  text-align: center;
 }
 
-div.tooltip {
-    float: left; position: absolute; text-align: left;
-    width: var(--division_width); height: auto; padding: 10px;
-    font-size: 16px;
-    background: floralwhite;
-    border: 0; border-radius: 8px;
-    pointer-events: none;
+a {
+  color: var(--color-link);
+}
+a:hover {
+  color: var(--color-link-hover);
 }
 
+.label {
+  font-size: 10px;
+  letter-spacing: 0.02em;
+  font-family: var(--font-body);
+}
+
+/* ========== Layout Panels ========== */
+
+.dashboard {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  padding: 20px;
+  height: calc(100vh - 100px);
+  box-sizing: border-box;
+}
+
+.left-panel,
+.right-panel {
+  flex: 1;
+  background-color: var(--color-card);
+  border-radius: 12px;
+  box-shadow: 0 0 10px var(--color-muted);
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.svg_wrapper {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.svg_wrapper svg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* ========== Containers ========== */
+
+.main_container,
+.dd_container {
+  float: left;
+  align-content: center;
+  margin: 5px;
+  padding: 5px;
+  box-shadow: rgba(0, 0, 0, 0.05) 0 0 0 1px,
+              var(--color-muted) 0 0 0 1px inset;
+}
+
+.container_l,
+.container_r,
+.container_tool {
+  float: left;
+  display: table-cell;
+  vertical-align: top;
+  padding: 10px;
+  font-size: large;
+}
+
+.container_l {
+  width: 800px;
+}
+.container_r {
+  width: 10%;
+  height: 10%;
+}
+.container_tool {
+  width: auto;
+  margin-top: -100px;
+}
+
+.title_div {
+  margin-left: 5px;
+}
+
+.svg_line_plot {
+  float: left;
+  align-content: center;
+  height: 500px;
+  width: 71.2%;
+  margin: 0 0 10px 5px;
+  padding-left: 3%;
+  font-size: large;
+  box-shadow: rgba(0, 0, 0, 0.05) 0 0 0 1px,
+              var(--color-muted) 0 0 0 1px inset;
+  opacity: 0;
+}
+
+/* ========== Charts & Axes ========== */
+
+#histogram,
+#svg_line_plot {
+  flex-shrink: 0;
+  margin-top: 20px;
+}
 
 .subtitle text {
   font-size: 10px;
@@ -85,89 +168,94 @@ div.tooltip {
 
 path.line {
   fill: none;
-  stroke: midnightblue;
+  stroke: var(--color-link);
   stroke-width: 3px;
 }
 
-.axis path, .axis line {
+.axis path,
+.axis line {
   fill: none;
-  stroke: #595065;
+  stroke: var(--color-dark);
   shape-rendering: geometricPrecision;
 }
 
 text.title {
   font-size: 10px;
-  fill: Black;
-}
-.main_container {
-    float: left; align-content: center;
-    height: auto; width: auto;
-    margin-top:5px; margin-bottom: 10px; margin-left:5px; padding-top: 5px; padding-bottom: 10px; padding-left:5px;
-    box-shadow: rgba(0, 0, 0, 0.05) 0 0 0 1px, rgb(209, 213, 219) 0 0 0 1px inset;
+  fill: black;
 }
 
-.container_l {
-    float: left; display: table-cell; vertical-align:top;
-    height: auto; padding: 10px; width: 800px;
-    border: 0 solid black;
-    font-size: large;
-}
-.container_r {
-    float: left; display: table-cell; vertical-align:top;
-    height: 10%; padding: 10px; width: 10%;
-    border: 0 solid black;
-    font-size: large;
-}
+/* ========== Tooltips ========== */
 
-.container_tool {
-    float: left; display: table-cell; vertical-align:top;
-    height: auto; padding: 10px; width: auto; margin-left: 0px; margin-top: -100px;
-    border: 0 solid black;
-    font-size: large;
-}
-
-.title_div {
-    margin-left:5px;
+.tooltip,
+div.tooltip {
+  position: absolute;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-size: 12px;
+  padding: 10px;
+  line-height: 1.3;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  width: var(--division_width);
+  float: left;
+  text-align: left;
 }
 
+/* ========== Base Stat Section ========== */
 
-.dd_container {
-    float: left; align-content: center;
-    height: auto; width: auto;
-    margin-top:5px; margin-bottom: 10px; margin-left:5px; padding: 5px;
-    box-shadow: rgba(0, 0, 0, 0.05) 0 0 0 1px, rgb(209, 213, 219) 0 0 0 1px inset;
-    opacity: 100.0;
+.base_stat_wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+  background-color: var(--color-muted);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: inset 0 0 0 2px var(--color-border);
+}
+.base_stat_pokemon_profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 10px;
+  border: 2px solid var(--color-border);
+  border-radius: 6px;
+  background-color: var(--color-surface-alt);
 }
 
-.svg_line_plot {
-    float:left; align-content: center;
-    height: 500px; width: 71.2%;
-    margin-top:0px; margin-bottom: 10px; margin-left:5px; padding-top: 0; padding-bottom: 0; padding-left:3%;
-    box-shadow: rgba(0, 0, 0, 0.05) 0 0 0 1px, rgb(209, 213, 219) 0 0 0 1px inset;
-    opacity: 0.0; font-size: large;
+.base_stat_pokemon_id {
+  font-size: 12px;
+  color: var(--color-danger);
+  font-family: var(--font-body);
+  margin-bottom: 4px;
 }
 
-.tooltip {
-    position: absolute;
-    background: white;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 10px!important;
-    opacity: 0;
-    transition: opacity 0.2s ease;
-  }
+.base_stat_pokemon_name {
+  font-family: var(--font-heading);
+  font-size: 16px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-heading);
+  margin: 0;
+}
 
-  .base_stat_wrapper {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-  }
+.base_stat_pokemon_sprite {
+  width: 120px;
+  height: 120px;
+  image-rendering: pixelated;
+  margin-top: 10px;
+}
 
-  .base_stat_pokemon_sprite {
-    width: 96px;
-    height: 96px;
-  }
+.base_stat_radar_svg {
+  flex-shrink: 0;
+}
 
-  .base_stat_radar_svg {
-    flex-shrink: 0;
-  }
+/* ========== Inputs ========== */
+
+select.dropdown {
+  width: 100%;
+  padding: 5px;
+  font-family: var(--font-body);
+}
