@@ -22,8 +22,17 @@ function drawRadarChart(pokemon) {
     const wrapper = container.append("div")
         .attr("class", "base_stat_wrapper");
 
+    // TOP ROW: Profile and Encounter
+    const top_row = wrapper.append("div")
+        .attr("class", "base_stat_top_row");
+
+    // ============ PROFILE ==========
+
     // Pokémon main info
-    const profile = wrapper.append("div")
+    const info_container = top_row.append("div")
+        .attr("class", "info_container")
+
+    const profile = info_container.append("div")
         .attr("class", "base_stat_pokemon_profile")
 
     profile.append("span")
@@ -40,8 +49,53 @@ function drawRadarChart(pokemon) {
         .attr("alt", pokemon.name)
         .attr("class", "base_stat_pokemon_sprite");
 
+    // ============== ATTRIBUTES ============
+    const type_bar = info_container.append("div")
+        .attr("class", "base_stat_pokemon_type_bar");
+
+    // get pokemon types
+    pokemon.types.forEach(type => {
+        type_bar.append("span")
+            .attr("class", `base_stat_type_badge type_${type}`)
+            .text(type.toUpperCase());
+    })
+
+    // get height and weight
+    type_bar.append("div")
+        .attr("class", "physical_stats")
+        .html(`Height: ${(pokemon.height / 10).toFixed(1)} m &nbsp; | &nbsp; Weight: ${(pokemon.weight / 10).toFixed(1)} kg`);
+
+    
+    // ========= ENCOUNTER DATA =====
+    if (pokemon.encounters && pokemon.encounters.length > 0) {
+        const encounter_wrapper = top_row.append("div")
+            .attr("class", "encounter_wrapper")
+
+        const grouped = d3.group(pokemon.encounters, d => d.version);
+        grouped.forEach((entries, version) => {
+            const block = encounter_wrapper.append("div")
+                .attr("class", "version_encounter_block");
+
+            block.append("h3")
+                .attr("class", `version_label version_${version}`)
+                .text(version.toUpperCase());
+
+            entries.forEach(e => {
+                block.append("div")
+                    .attr("class", "encounter_entry")
+                    .text(`${e.method} | ${e.chance}% | Lv ${e.min_level}–${e.max_level}` +
+                          (e.conditions.length ? ` | ${e.conditions.join(", ")}` : ""));
+            })
+        });
+    }
+
+    // ============== BASE STAT RADAR CHART ======
+
+    const radarChartContainer = wrapper.append("div")
+        .attr("class", "radar_chart_container");
+
     // Radar SVG
-    const svg = wrapper.append("svg")
+    const svg = radarChartContainer.append("svg")
         .attr("width", width)
         .attr("height", height)
         .attr("class", "base_stat_radar_svg");

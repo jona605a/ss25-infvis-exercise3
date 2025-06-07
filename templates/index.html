@@ -89,7 +89,7 @@
 
     Promise.all([
         d3.json("/merged-kanto-locations"),
-        d3.json("/static/kanto_pokemon_data.json")
+        d3.json("/pokemon-api-data")
     ]).then(([loc, poke]) => {
         locationData = loc;
         
