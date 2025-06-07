@@ -1,5 +1,6 @@
 import requests
 import json
+from collections import defaultdict
 
 BASE_URL = "https://pokeapi.co/api/v2/"
 GENERATION_ID = 1
@@ -43,12 +44,91 @@ def get_pokemon_data(name):
         "weight": data["weight"]
     }
     
+
+def get_location_data():
+    print("Fetching Kanto location data...")
+    region = requests.get(f"{BASE_URL}/region/kanto").json()
+    locations = []
+
+    for location in region["locations"]:
+        location_data = requests.get(location["url"]).json()
+        loc_entry = {
+            "id": location_data["id"],
+            "name": location_data["name"],
+            "areas": []
+        }
+
+        for area in location_data.get("areas", []):
+            area_data = requests.get(area["url"]).json()
+            pokemon_encounters = get_pokemon_encounters(area_data["pokemon_encounters"])
+
+            loc_entry["areas"].append({
+                "id": area_data["id"],
+                "name": area_data["name"],
+                "pokemon_encounters": pokemon_encounters
+            })
+
+        locations.append(loc_entry)
+
+    return locations
+
+
+def get_pokemon_encounters(pokemon_encounter):
+    encounters = []
+    for entry in pokemon_encounter:
+        id = int(entry["pokemon"]["url"].rstrip("/").split("/")[-1])
+        name = entry["pokemon"]["name"]
+
+        for version_detail in entry["version_details"]:
+            version_name = version_detail["version"]["name"]
+
+            for encounter in version_detail["encounter_details"]:
+                encounters.append({
+                    "pokemon_id": id,
+                    "pokemon_name": name,
+                    "version": version_name,
+                    "method": encounter["method"]["name"],
+                    "chance": encounter["chance"],
+                    "min_level": encounter["min_level"],
+                    "max_level": encounter["max_level"],
+                    "conditions": [c["name"] for c in encounter["condition_values"]]
+                })
+
+    return encounters
+
+
+def merge_pokemon_with_encounters(pokemon_list, location_data):
+    print("Merging encounter data with Pokémon...")
+    encounter_lookup = defaultdict(list)
+
+    for location in location_data:
+        for area in location["areas"]:
+            for encounter in area["pokemon_encounters"]:
+                key = encounter["pokemon_id"]
+                encounter_lookup[key].append({
+                    "version": encounter["version"],
+                    "method": encounter["method"],
+                    "area": area["name"],
+                    "location": location["name"],
+                    "chance": encounter["chance"],
+                    "min_level": encounter["min_level"],
+                    "max_level": encounter["max_level"],
+                    "conditions": encounter["conditions"]
+                })
+
+    for p in pokemon_list:
+        p["encounters"] = encounter_lookup.get(p["id"], [])
+
+    return pokemon_list
+    
     
 if __name__ == "__main__":
     print("Fetching data ...")
     pokemon_data = get_pokemon()
+    location_data = get_location_data()
+    merged = merge_pokemon_with_encounters(pokemon_data, location_data)
     
     with open("static/kanto_pokemon_data.json", "w") as f:
-        json.dump(pokemon_data, f, indent=2)
+        json.dump(merged, f, indent=2)
         
     print("Snapshot saved.")

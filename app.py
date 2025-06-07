@@ -3,6 +3,7 @@ import pandas as pd
 import os
 import json
 
+
 app = Flask(__name__)
 
 # ensure that we can reload when we change the HTML / JS for debugging
@@ -23,6 +24,11 @@ def pokemon_data():
     df = df.fillna("")
     return jsonify(df.to_dict(orient='records'))
 
+@app.route('/pokemon-api-data')
+def merged_pokemon_data():
+    with open("static/kanto_pokemon_data.json") as f:
+        return jsonify(json.load(f))
+
 @app.route('/pokemon-types')
 def pokemon_types():
     # Read the pokemon.csv file, count the occurrences of each type, and return the counts as JSON
@@ -39,7 +45,7 @@ def pokemon_types():
     return jsonify(type_counts)
 
 @app.route("/api/pokemon/<int:pokemon_id>")
-def pokemon(pokemon_id):
+def pokemon(pokemon_id, merged=True):
     # read json file
     with open("static/kanto_pokemon_data.json") as f:
         data = json.load(f)
@@ -47,7 +53,7 @@ def pokemon(pokemon_id):
     # get pokemon that matches id ; if no match return empty
     pokemon = next((p for p in data if p["id"] == pokemon_id), None)
     return jsonify(pokemon or {})
-
+       
 
 # returns a json file with landmark areas merged to their respective city or route areas
 @app.route('/merged-kanto-locations')

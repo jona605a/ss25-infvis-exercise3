@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Pokémon Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Mono&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" type="text/css" href="{{url_for('static',filename='styles/style.css')}}">
 
@@ -88,7 +89,7 @@
 
     Promise.all([
         d3.json("/merged-kanto-locations"),
-        d3.json("/static/kanto_pokemon_data.json")
+        d3.json("/pokemon-api-data")
     ]).then(([loc, poke]) => {
         locationData = loc;
         
