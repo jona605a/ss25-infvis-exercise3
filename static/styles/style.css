@@ -392,3 +392,82 @@ div.tooltip {
     padding: 5px;
     font-family: var(--font-body);
 }
+
+/* ========== Search ========== */
+.search-container {
+    position: relative;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#searchInput {
+    padding: 10px;
+    width: 250px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    background-color: #fefefe;
+    border: 3px solid #444;
+    outline: none;
+    box-shadow: inset -2px -2px 0 #999, inset 2px 2px 0 #ccc;
+    color: #222;
+}
+
+button {
+    padding: 10px;
+    margin-left: 10px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    background-color: #e0e0e0;
+    border: 3px solid #444;
+    cursor: pointer;
+    box-shadow: inset -2px -2px 0 #999, inset 2px 2px 0 #ccc;
+    color: #222;
+}
+
+button:hover {
+    background-color: #d0d0d0;
+}
+
+.suggestions-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 200px;
+    overflow-y: auto;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-74%);
+    width: 250px;
+    background: #fefefe;
+    border: 3px solid #444;
+    z-index: 10;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    color: #222;
+    box-shadow: inset -2px -2px 0 #999, inset 2px 2px 0 #ccc;
+}
+
+.suggestions-list li {
+    padding: 8px 10px;
+    cursor: pointer;
+    text-align: left;
+}
+
+.suggestions-list li:hover {
+    background-color: #d0d0d0;
+}
+
+.suggestions-list:empty {
+    display: none;
+}
+
+.highlighted-region {
+    stroke: var(--color-highlight) !important;
+    stroke-width: 3px !important;
+    stroke-linejoin: round !important;
+    stroke-linecap: round !important;
+    fill: var(--color-highlight) !important;
+    fill-opacity: 0.25 !important;
+    filter: drop-shadow(0 0 6px var(--color-highlight));
+    transition: all 0.3s ease;
+}

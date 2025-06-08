@@ -149,4 +149,25 @@ function drawRadarChart(pokemon) {
         .attr("fill", "var(--color-button)")
         .attr("stroke", "var(--color-dark)")
         .attr("fill-opacity", 0.6);
+
+    
+    highlightPokemonRegions(pokemon.name);
+}
+
+function highlightPokemonRegions(pokemonName) {
+    // Reset old highlights
+    d3.selectAll(".highlighted-region").classed("highlighted-region", false);
+
+    const matchedRegions = locationData.filter(region =>
+        region.areas.some(area =>
+            (area.pokemon_encounters || []).some(e => e.pokemon_name === pokemonName)
+        )
+    );
+
+    matchedRegions.forEach(region => {
+        const germanId = Object.keys(svgToEnglish).find(key => svgToEnglish[key] === region.name);
+        if (germanId) {
+            d3.select("#" + germanId).classed("highlighted-region", true);
+        }
+    });
 }

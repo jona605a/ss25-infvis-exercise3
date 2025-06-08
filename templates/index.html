@@ -15,6 +15,15 @@
     <h1>Pokémon Statistics Dashboard</h1>
     <p style="text-align: center;">Ana Fahlböck, Jonathan Højlev, Katharina Höckner</p>
 
+<div class="search-container">
+    <input id="searchInput"
+       type="text"
+       placeholder="Search Pokémon..."
+       autocomplete="off">
+    <button onclick="searchPokemon()">Search</button>
+    <ul id="suggestions" class="suggestions-list"></ul>
+</div>
+
     <div class="dashboard">
         <!-- LEFT: All the locatons maps -->
         <div class="left-panel">
@@ -39,6 +48,7 @@
     </div>
     <script src="{{url_for('static', filename='js/radar_chart.js')}}"></script>
     <script src="{{url_for('static', filename='js/type_hist.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/search.js') }}"></script>
 
   <script>
     // mapping svg id with ids in jsons TODO not done yet
@@ -97,6 +107,7 @@
             acc[p.name] = p;
             return acc;
         }, {});
+        setupSearchInput();
     });
 
    function showPokemonList(englishName) {
