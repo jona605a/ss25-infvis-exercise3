@@ -124,7 +124,12 @@
     }
 
     const allEncounters = regionData.areas.flatMap(area => area.pokemon_encounters || []);
-    const uniquePokemon = [...new Set(allEncounters.map(e => e.pokemon_name))];
+    const uniquePokemon = [...new Set(
+    allEncounters
+        .map(e => e.pokemon_name)
+        .filter(name => pokemonData[name])  // only if data exists
+)];
+
 
     if (uniquePokemon.length === 0) {
         listDiv.append("p").text("No Pokemon found in this region.");
