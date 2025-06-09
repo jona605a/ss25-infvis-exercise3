@@ -72,7 +72,7 @@ function drawRadarChart(stats, wrapper, data, pokemon) {
             .style("font-family", "var(--font-body)")
             .style("fill", "var(--color-dark)")
             .style("pointer-events", "none")
-            .text(statAbbreviations[stat.toLowerCase()] || stat) // use stat abbreviations as label
+            .text(statLabels[stat.toLowerCase()] || stat) // use stat abbreviations as label
             .append("title")
             .text(`${stat}: ${data[stat]}`);
     });
@@ -86,7 +86,7 @@ function drawRadarChart(stats, wrapper, data, pokemon) {
     }).join(" ");
 
     const statValues = stats.map(([stat, value]) => ({
-        label: statAbbreviations[stat.toLowerCase()] || stat,
+        label: statLabels[stat.toLowerCase()] || stat,
         value: value
     }));
 
