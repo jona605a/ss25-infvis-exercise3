@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Pokémon Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Mono&display=swap"
+        rel="stylesheet">
 
     <link rel="stylesheet" type="text/css" href="{{url_for('static',filename='styles/style.css')}}">
 
@@ -15,222 +17,215 @@
     <h1>Pokémon Statistics Dashboard</h1>
     <p style="text-align: center;">Ana Fahlböck, Jonathan Højlev, Katharina Höckner</p>
 
-<div class="search-container">
-    <input id="searchInput"
-       type="text"
-       placeholder="Search Pokémon..."
-       autocomplete="off">
-    <button onclick="searchPokemon()">Search</button>
-    <ul id="suggestions" class="suggestions-list"></ul>
-</div>
-
     <div class="dashboard">
         <!-- LEFT: All the locatons maps -->
         <div class="left-panel">
+            <div id="location_pokemon_list"></div>
             <div id="svg_type_hist" class="svg_wrapper small"></div>
         </div>
 
         <!--Histogram and other informations -->
         <div class="right-panel">
             <!--<div id="histogram"></div> --><!-- Histogram -->
-
-            <div id="location_pokemon_list"></div>
-
             <!--<div id="histogram"><div class="dd_container">
                 <label for="indicator_change">Indicator:</label>
                 <select id="indicator_change" class="dropdown"></select>
             </div>-->
-
-            <div id="radar_chart"></div>
-
+            <div class="search-container">
+                <input id="searchInput" type="text" placeholder="Search Pokémon..." autocomplete="off">
+                <button onclick="searchPokemon()">Search</button>
+                <ul id="suggestions" class="suggestions-list"></ul>
+            </div>
+            <div id="pokemon_section"></div>
             <div id="svg_line_plot" class="svg_line_plot"></div>
         </div>
     </div>
-    <script src="{{url_for('static', filename='js/radar_chart.js')}}"></script>
+    <script src="{{url_for('static', filename='js/pokemon_section.js')}}"></script>
     <script src="{{url_for('static', filename='js/type_hist.js')}}"></script>
     <script src="{{ url_for('static', filename='js/search.js') }}"></script>
 
-  <script>
-    // mapping svg id with ids in jsons TODO not done yet
-    const svgToEnglish = {
-        "alabastia": "pallet-town",
-        "azuria": "cerulean-city",
-        "fuchsania": "fuchsia-city",
-        "marmoria": "pewter-city",
-        "prismania": "celadon-city",
-        "saffronia": "saffron-city",
-        "vertania": "viridian-city",
-        "zinnober": "cinnabar-island",
-        "orania": "vermilion-city",
-        "lavandia": "lavender-town",
-        "zinnoberinsel": "cinnabar-island",
-        "route1": "kanto-route-1",
-        "route2": "kanto-route-2",
-        "route3": "kanto-route-3",
-        "route4": "kanto-route-4",
-        "route5": "kanto-route-5",
-        "route6": "kanto-route-6",
-        "route7": "kanto-route-7",
-        "route8": "kanto-route-8",
-        "route9": "kanto-route-9",
-        "route10": "kanto-route-10",
-        "route11": "kanto-route-11",
-        "route12": "kanto-route-12",
-        "route13": "kanto-route-13",
-        "route14": "kanto-route-14",
-        "route15": "kanto-route-15",
-        "route16": "kanto-route-16",
-        "route17": "kanto-route-17",
-        "route18": "kanto-route-18",
-        "route19": "kanto-sea-route-19",
-        "route20": "kanto-sea-route-20",
-        "route21": "kanto-sea-route-21",
-        "route22": "kanto-route-22",
-        "route23": "kanto-route-23",
-        "route24": "kanto-route-24",
-        "route25": "kanto-route-25",
-        "route26": "kanto-route-26",
-        "route27": "kanto-route-27",
-        "route28": "kanto-route-28",
-    };
+    <script>
+        // mapping svg id with ids in jsons TODO not done yet
+        const svgToEnglish = {
+            "alabastia": "pallet-town",
+            "azuria": "cerulean-city",
+            "fuchsania": "fuchsia-city",
+            "marmoria": "pewter-city",
+            "prismania": "celadon-city",
+            "saffronia": "saffron-city",
+            "vertania": "viridian-city",
+            "zinnober": "cinnabar-island",
+            "orania": "vermilion-city",
+            "lavandia": "lavender-town",
+            "zinnoberinsel": "cinnabar-island",
+            "route1": "kanto-route-1",
+            "route2": "kanto-route-2",
+            "route3": "kanto-route-3",
+            "route4": "kanto-route-4",
+            "route5": "kanto-route-5",
+            "route6": "kanto-route-6",
+            "route7": "kanto-route-7",
+            "route8": "kanto-route-8",
+            "route9": "kanto-route-9",
+            "route10": "kanto-route-10",
+            "route11": "kanto-route-11",
+            "route12": "kanto-route-12",
+            "route13": "kanto-route-13",
+            "route14": "kanto-route-14",
+            "route15": "kanto-route-15",
+            "route16": "kanto-route-16",
+            "route17": "kanto-route-17",
+            "route18": "kanto-route-18",
+            "route19": "kanto-sea-route-19",
+            "route20": "kanto-sea-route-20",
+            "route21": "kanto-sea-route-21",
+            "route22": "kanto-route-22",
+            "route23": "kanto-route-23",
+            "route24": "kanto-route-24",
+            "route25": "kanto-route-25",
+            "route26": "kanto-route-26",
+            "route27": "kanto-route-27",
+            "route28": "kanto-route-28",
+        };
 
-    let locationData = {};
-    let pokemonData = {};
+        let locationData = {};
+        let pokemonData = {};
 
-    Promise.all([
-        d3.json("/merged-kanto-locations"),
-        d3.json("/pokemon-api-data")
-    ]).then(([loc, poke]) => {
-        locationData = loc;
-        
-        pokemonData = poke.reduce((acc, p) => {
-            acc[p.name] = p;
-            return acc;
-        }, {});
-        setupSearchInput();
-    });
+        Promise.all([
+            d3.json("/merged-kanto-locations"),
+            d3.json("/pokemon-api-data")
+        ]).then(([loc, poke]) => {
+            locationData = loc;
 
-   function showPokemonList(englishName) {
-    const listDiv = d3.select("#location_pokemon_list");
-    listDiv.html("");
+            pokemonData = poke.reduce((acc, p) => {
+                acc[p.name] = p;
+                return acc;
+            }, {});
+            setupSearchInput();
+        });
 
-    const regionData = locationData.find(r => r.name === englishName);
+        function showPokemonList(englishName) {
+            const listDiv = d3.select("#location_pokemon_list");
+            listDiv.html("");
 
-
-    if (!regionData || !regionData.areas || regionData.areas.length === 0) {
-        listDiv.append("p").text("No data for the region.");
-        console.warn("no data for this region", englishName, regionData);
-        return;
-    }
-
-    const allEncounters = regionData.areas.flatMap(area => area.pokemon_encounters || []);
-    const uniquePokemon = [...new Set(
-    allEncounters
-        .map(e => e.pokemon_name)
-        .filter(name => pokemonData[name])  // only if data exists
-)];
+            const regionData = locationData.find(r => r.name === englishName);
 
 
-    if (uniquePokemon.length === 0) {
-        listDiv.append("p").text("No Pokemon found in this region.");
-        console.warn("No pokemon in pokemon_encounters:", regionData);
-        return;
-    }
+            if (!regionData || !regionData.areas || regionData.areas.length === 0) {
+                listDiv.append("p").text("No data for the region.");
+                console.warn("no data for this region", englishName, regionData);
+                return;
+            }
 
-    listDiv.append("h3").text("Pokémon in " + englishName.replace("-", " "));
-
-    const ul = listDiv.append("ul")
-        .style("list-style", "none")
-        .style("padding", "0")
-        .style("display", "flex")
-        .style("flex-wrap", "wrap")
-        .style("gap", "10px");
-
-    uniquePokemon.forEach(name => {
-        const p = pokemonData[name];
-        const li = ul.append("li")
-            .style("background", "#f0f0f0")
-            .style("padding", "8px")
-            .style("border-radius", "8px")
-            .style("display", "flex")
-            .style("align-items", "center")
-            .style("gap", "6px")
-            .style("font-family", "monospace");
-
-        if (p && p.sprite) {
-            li.html(`<img src="${p.sprite}" width="32" height="32"> ${p.name}`);
-            li.style("cursor", "pointer")
-            // on click show radar chart
-                .on("click", () => {
-                    console.log("Clicked:", p.name); // TODO remove later
-                    drawRadarChart(p);
-                });
-        } else {
-            li.text(name);
-        }
-    });
-
-    console.log("Found pokemon: ", uniquePokemon);
-}
+            const allEncounters = regionData.areas.flatMap(area => area.pokemon_encounters || []);
+            const uniquePokemon = [...new Set(
+                allEncounters
+                    .map(e => e.pokemon_name)
+                    .filter(name => pokemonData[name])  // only if data exists
+            )];
 
 
-    // load svg
-    function loadSVG(filename, sizeClass) {
-        d3.xml("/static/" + filename)
-            .then(data => {
-                const svgHost = d3.select("#svg_type_hist");
-                svgHost.html("");
-                svgHost.attr("class", "svg_wrapper " + sizeClass);
+            if (uniquePokemon.length === 0) {
+                listDiv.append("p").text("No Pokemon found in this region.");
+                console.warn("No pokemon in pokemon_encounters:", regionData);
+                return;
+            }
 
-                const imported = document.importNode(data.documentElement, true);
-                svgHost.node().appendChild(imported);
+            listDiv.append("h3").text("Pokémon in " + englishName.replace("-", " "));
 
-                if (filename === "world.svg") {
-                    d3.select(svgHost.node())
-                        .select("#rect1")
-                        .style("cursor", "pointer")
-                        .on("click", () => loadSVG("kantomap.svg", "large"));
+            const ul = listDiv.append("ul")
+                .style("list-style", "none")
+                .style("padding", "0")
+                .style("display", "flex")
+                .style("flex-wrap", "wrap")
+                .style("gap", "10px");
+
+            uniquePokemon.forEach(name => {
+                const p = pokemonData[name];
+                const li = ul.append("li")
+                    .style("background", "#f0f0f0")
+                    .style("padding", "8px")
+                    .style("border-radius", "8px")
+                    .style("display", "flex")
+                    .style("align-items", "center")
+                    .style("gap", "6px")
+                    .style("font-family", "monospace");
+
+                if (p && p.sprite) {
+                    li.html(`<img src="${p.sprite}" width="32" height="32"> ${p.name}`);
+                    li.style("cursor", "pointer")
+                        // on click show pokemon section
+                        .on("click", () => {
+                            window.selectedLocationName = englishName;
+                            drawPokemonSection(p, englishName)
+                        });
+                } else {
+                    li.text(name);
                 }
+            });
 
-                if (filename === "kantomap.svg") {
-    Object.keys(svgToEnglish).forEach(svgId => {
-        const region = d3.select(svgHost.node()).select("#" + svgId);
-
-        if (!region.empty()) {
-            region
-                .style("cursor", "pointer")
-                .on("click", () => {
-                    const englishName = svgToEnglish[svgId];
-                    console.log("svg id", svgId);
-                    console.log("name in dataset", englishName);
-
-                    const regionData = locationData.find(r => r.name === englishName);
+            console.log("Found pokemon: ", uniquePokemon);
+        }
 
 
-                    if (!regionData) {
-                        console.warn("No data in locationData for ", englishName);
-                    } else {
-                        console.log("Found Pokémon: ", regionData.pokemon);
+        // load svg
+        function loadSVG(filename, sizeClass) {
+            d3.xml("/static/" + filename)
+                .then(data => {
+                    const svgHost = d3.select("#svg_type_hist");
+                    svgHost.html("");
+                    svgHost.attr("class", "svg_wrapper " + sizeClass);
+
+                    const imported = document.importNode(data.documentElement, true);
+                    svgHost.node().appendChild(imported);
+
+                    if (filename === "world.svg") {
+                        d3.select(svgHost.node())
+                            .select("#rect1")
+                            .style("cursor", "pointer")
+                            .on("click", () => loadSVG("kantomap.svg", "large"));
                     }
 
-                    showPokemonList(englishName);
-                });
-        } else {
-            console.warn("Region with the ID ", svgId, "no in svg");
+                    if (filename === "kantomap.svg") {
+                        Object.keys(svgToEnglish).forEach(svgId => {
+                            const region = d3.select(svgHost.node()).select("#" + svgId);
+
+                            if (!region.empty()) {
+                                region
+                                    .style("cursor", "pointer")
+                                    .on("click", () => {
+                                        const englishName = svgToEnglish[svgId];
+                                        console.log("svg id", svgId);
+                                        console.log("name in dataset", englishName);
+
+                                        const regionData = locationData.find(r => r.name === englishName);
+
+
+                                        if (!regionData) {
+                                            console.warn("No data in locationData for ", englishName);
+                                        } else {
+                                            console.log("Found Pokémon: ", regionData.pokemon);
+                                        }
+
+                                        showPokemonList(englishName);
+                                    });
+                            } else {
+                                console.warn("Region with the ID ", svgId, "no in svg");
+                            }
+                        });
+                    }
+
+                })
+                .catch(error => console.error("Error while loading svg:", error));
         }
-    });
-}
 
-            })
-            .catch(error => console.error("Error while loading svg:", error));
-    }
+        // load world map
+        loadSVG("world.svg", "small");
 
-    // load world map
-    loadSVG("world.svg", "small");
-
-    // draw histogramm
-    drawHistogram();
-</script>
+        // draw histogramm
+        drawHistogram();
+    </script>
 
 </body>
+
 </html>

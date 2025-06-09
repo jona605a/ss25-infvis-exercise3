@@ -45,7 +45,7 @@ function searchPokemon() {
     if (!name) {
         loadSVG("kantomap.svg", "large");
         drawHistogram();
-        drawRadarChart(null);
+        drawPokemonSection(null);
         d3.selectAll(".highlighted-region").classed("highlighted-region", false);
         input.value = "";
         suggestions.innerHTML = "";
@@ -58,7 +58,7 @@ function searchPokemon() {
         return;
     }
 
-    drawRadarChart(p);
+    drawPokemonSection(p);
     highlightPokemonRegions(name);
     suggestions.innerHTML = "";
 }
