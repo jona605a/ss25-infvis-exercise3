@@ -140,20 +140,20 @@ function loadSVG(filename, sizeClass) {
             }
 
             if (filename === "kantomap.svg") {
+                const svgRoot = d3.select(svgHost.node()).select("svg");
+
                 Object.keys(svgToEnglish).forEach(svgId => {
-                    const region = d3.select(svgHost.node()).select("#" + svgId);
+                    const region = svgRoot.select("#" + svgId);
 
                     if (!region.empty()) {
                         region
+                            .classed("clickable-region", true)
                             .style("cursor", "pointer")
                             .on("click", () => {
                                 const englishName = svgToEnglish[svgId];
-                                console.log("svg id", svgId);
-                                console.log("name in dataset", englishName);
-
                                 const regionData = locationData.find(r => r.name === englishName);
-
-
+                                // Debug, print the region data
+                                console.log("Clicked region:", englishName, regionData);
                                 if (!regionData) {
                                     console.warn("No data in locationData for ", englishName);
                                 } else {
@@ -162,11 +162,10 @@ function loadSVG(filename, sizeClass) {
 
                                 showPokemonList(englishName);
                             });
-                    } else {
-                        console.warn("Region with the ID ", svgId, "no in svg");
                     }
                 });
             }
+
 
         })
         .catch(error => console.error("Error while loading svg:", error));
