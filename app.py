@@ -93,7 +93,7 @@ def merged_locations():
     
     return jsonify(merged_data)
 
-@app.route('/bucket-encounters/<pokemon_name>/<location_name/<version>')
+@app.route('/bucket-encounters/<pokemon_name>/<location_name>/<version>')
 def bucket_encounters(pokemon_name, location_name, version):
     LEVEL_TIERS = [
         (2, 10, "early"),
