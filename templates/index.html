@@ -20,9 +20,14 @@
 
     <div class="dashboard">
         <!-- LEFT: All the locatons maps -->
-        <div class="left-panel">
-            <div id="svg_kanto_map" class="svg_wrapper small"></div>
+         <div class="left-panel">
+            <button id="backButton" style="display: none;">Back to World Map</button>
             <div id="location_pokemon_list"></div>
+            <p id="mapNotice" class="map-notice" style="display: none;">
+                Note: Not all regions are available yet. Please follow the white highlights to explore the map.
+            </p>
+
+            <div id="svg_type_hist" class="svg_wrapper small"></div>
         </div>
 
         <!--Histogram and other informations -->
