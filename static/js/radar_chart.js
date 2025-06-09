@@ -83,7 +83,7 @@ function drawRadarChart(pokemon) {
             entries.forEach(e => {
                 block.append("div")
                     .attr("class", "encounter_entry")
-                    .text(`${e.method} | ${e.chance}% | Lv ${e.min_level}–${e.max_level}` +
+                    .text(`${e.method} | ${e.chance}% | Lv ${e.min_level}–${e.max_level} | ${e.area}` +
                           (e.conditions.length ? ` | ${e.conditions.join(", ")}` : ""));
             })
         });
