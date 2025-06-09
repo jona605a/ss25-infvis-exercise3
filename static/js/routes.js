@@ -125,7 +125,7 @@ function showPokemonList(englishName) {
 function loadSVG(filename, sizeClass) {
     d3.xml("/static/" + filename)
         .then(data => {
-            const svgHost = d3.select("#svg_type_hist");
+            const svgHost = d3.select("#svg_kanto_map");
             svgHost.html("");
             svgHost.attr("class", "svg_wrapper " + sizeClass);
 

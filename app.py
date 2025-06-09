@@ -22,6 +22,15 @@ def pokemon_data():
     df = pd.read_csv(path)
     df.columns = df.columns.str.strip()
     df = df.fillna("")
+    # Print the highest stat value for any pokemon
+    df['highest_stat'] = df[['hp', 'attack', 'defense', 'sp_attack', 'sp_defense', 'speed']].max(axis=1)
+    # Print highest stat
+    print("Highest stat value for any pokemon:", df['highest_stat'].max())
+    # Print the highest stat for generation 1 and the name of the pokemon
+    gen1_df = df[df['generation'] == 1]
+    highest_stat_gen1 = gen1_df['highest_stat'].max()
+    highest_stat_pokemon_gen1 = gen1_df[gen1_df['highest_stat'] == highest_stat_gen1]['name'].values[0]
+    print(f"Highest stat for generation 1: {highest_stat_gen1} ({highest_stat_pokemon_gen1})")
     return jsonify(df.to_dict(orient='records'))
 
 @app.route('/pokemon-api-data')

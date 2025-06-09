@@ -1,4 +1,4 @@
-const GLOBAL_STAT_MAX = 255; // based on stat limits
+const GLOBAL_STAT_MAX = 200; // based on stat limits
 
 function drawPokemonSection(pokemon) {
     if (!pokemon || !pokemon.base_stats) {
@@ -312,7 +312,7 @@ function highlightPokemonRegions(pokemonName) {
     // clear previous highlights
     d3.selectAll(".highlighted-region")
         .classed("highlighted-region", false)
-        .style("fill-opacity", null); // reset any custom opacity
+        .style("fill-opacity", null);
 
     const matchedRegions = locationData.filter(region =>
         region.areas.some(area =>

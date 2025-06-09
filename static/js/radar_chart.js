@@ -2,8 +2,8 @@ const statAbbreviations = {
     "hp": "HP",
     "attack": "Atk",
     "defense": "Def",
-    "special-attack": "SpAtk",
-    "special-defense": "SpDef",
+    "special-attack": "Sp.Atk",
+    "special-defense": "Sp.Def",
     "speed": "Speed"
 };
 

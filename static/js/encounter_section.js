@@ -1,6 +1,6 @@
 function drawEncounterSection(container, pokemon) {
     if (!pokemon.encounters || pokemon.encounters.length === 0) {
-        container.append("p").text("No encounter data available.");
+        container.append("p").text(`${capitalizeFirstLetter(pokemon.name)} does not appear in the wild.`);
         return;
     }
 
