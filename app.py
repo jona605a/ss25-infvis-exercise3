@@ -2,7 +2,7 @@ from flask import Flask, render_template, jsonify
 import pandas as pd
 import os
 import json
-
+from collections import defaultdict
 
 app = Flask(__name__)
 
@@ -93,6 +93,60 @@ def merged_locations():
     
     return jsonify(merged_data)
 
+@app.route('/bucket-encounters/<pokemon_name>/<location_name/<version>')
+def bucket_encounters(pokemon_name, location_name, version):
+    LEVEL_TIERS = [
+        (2, 10, "early"),
+        (11, 20, "mid"),
+        (21, 30, "mid-late"),
+        (31, 50, "late"),
+        (51, 70, "end-post")
+    ]
+    
+    def assign_level_tier(min_level, max_level):
+        for min, max, label in LEVEL_TIERS:
+            if min_level <= min and max_level <= max:
+                return label
+            return "other"
+        
+    with open("static/kanto_pokemon_data.json") as f:
+        data = json.load(f)
+    
+    # create dict structure
+    buckets = defaultdict(lambda: defaultdict(lambda: defaultdict(float)))
+    
+    # group & aggregate
+    for pokemon in data:
+        if pokemon_name and pokemon["name"] != pokemon_name:
+            continue
+        
+        for entry in pokemon.get("encounters", []):
+            if location_name and entry["location"] != location_name:
+                continue
+            
+            if version and entry["version"] != version:
+                continue
+            
+            tier = assign_level_tier(entry["min_level"], entry["max_level"])
+            area = entry["area"]
+            method = entry["method"]
+            buckets[area][tier][method] += entry["chance"]
+ 
+    # flatten
+    result = []
+    for area, tier_data in buckets.items():
+        for tier_label, methods in tier_data.items():
+            for method, chance_sum in methods.items():
+                result.append({
+                    "area": area,
+                    "level_tier": tier_label,
+                    "method": method,
+                    "chance": chance_sum
+                })
+    
+    return jsonify(result)
+
 
 if __name__ == '__main__':
     app.run()
+
