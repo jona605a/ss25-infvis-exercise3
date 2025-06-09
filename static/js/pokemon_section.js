@@ -65,7 +65,7 @@ function drawPokemonSection(pokemon) {
         .attr("class", "physical_stats")
         .html(`Height: ${(pokemon.height / 10).toFixed(1)} m &nbsp; | &nbsp; Weight: ${(pokemon.weight / 10).toFixed(1)} kg`);
 
-    
+
     // ========= ENCOUNTER DATA =====
     drawEncounterSection(top_row, pokemon, window.selectedLocationName);
 
@@ -79,7 +79,7 @@ function drawPokemonSection(pokemon) {
         .attr("width", width)
         .attr("height", height)
         .attr("class", "base_stat_radar_svg");
-        
+
     const g = svg.append("g")
         .attr("transform", `translate(${width / 2}, ${height / 2})`);
 
@@ -126,11 +126,11 @@ function drawPokemonSection(pokemon) {
 
     g.append("polygon")
         .attr("points", points)
-        .attr("fill", "var(--color-button)")
+        .attr("fill", getTypeColor(pokemon.types[0]))
         .attr("stroke", "var(--color-dark)")
         .attr("fill-opacity", 0.6);
 
-    
+
     highlightPokemonRegions(pokemon.name);
 }
 
@@ -150,4 +150,10 @@ function highlightPokemonRegions(pokemonName) {
             d3.select("#" + germanId).classed("highlighted-region", true);
         }
     });
+}
+
+function getTypeColor(type) {
+    return getComputedStyle(document.documentElement)
+        .getPropertyValue(`--type-${type.toLowerCase()}`)
+        .trim() || "var(--color-button)";
 }
