@@ -284,8 +284,10 @@ function getTypeColor(type) {
 }
 
 function highlightPokemonRegions(pokemonName) {
-    // Reset old highlights
-    d3.selectAll(".highlighted-region").classed("highlighted-region", false);
+    // Clear previous highlights
+    d3.selectAll(".highlighted-region")
+        .classed("highlighted-region", false)
+        .style("fill-opacity", null); // Reset any custom opacity
 
     const matchedRegions = locationData.filter(region =>
         region.areas.some(area =>
@@ -294,9 +296,33 @@ function highlightPokemonRegions(pokemonName) {
     );
 
     matchedRegions.forEach(region => {
-        const germanId = Object.keys(svgToEnglish).find(key => svgToEnglish[key] === region.name);
+        const englishName = region.name;
+        const germanId = Object.keys(svgToEnglish).find(key => svgToEnglish[key] === englishName);
+
         if (germanId) {
-            d3.select("#" + germanId).classed("highlighted-region", true);
+            let maxChance = 0;
+
+            region.areas.forEach(area => {
+                const encounters = area.pokemon_encounters || [];
+                encounters
+                    .filter(e => e.pokemon_name === pokemonName)
+                    .forEach(e => {
+                        if (e.chance != null) {
+                            maxChance = Math.max(maxChance, e.chance);
+                        }
+                    });
+            });
+
+            // Cap the opacity to a [0.2, 0.8] range so it's always visible
+            const opacity = Math.max(0.2, Math.min(0.8, maxChance / 100));
+
+            // console.log(`Highlighting ${englishName} (${germanId}) with opacity ${opacity}. Max chance: ${maxChance}`);
+
+            d3.select("#" + germanId)
+                .classed("highlighted-region", true)
+                .each(function () {
+                    this.style.setProperty("fill-opacity", opacity, "important");
+                });
         }
     });
 }

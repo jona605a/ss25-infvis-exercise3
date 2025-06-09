@@ -110,7 +110,7 @@ a:hover {
     flex-direction: column;
     padding: 20px;
     box-sizing: border-box;
-    overflow: hidden;
+    overflow-y: auto;
 }
 
 .svg_wrapper {
@@ -287,13 +287,22 @@ button:hover {
     display: none;
 }
 
+/* ========== Highlighted Regions ========== */
+
+.clickable-region {
+    fill: var(--color-muted) !important;
+    fill-opacity: 0.3 !important;
+    transition: all 0.3s ease;
+    pointer-events: all;
+}
+
 .highlighted-region {
     stroke: var(--color-highlight) !important;
-    stroke-width: 3px !important;
+    stroke-width: 1px !important;
     stroke-linejoin: round !important;
     stroke-linecap: round !important;
     fill: var(--color-highlight) !important;
-    fill-opacity: 0.25 !important;
+    /* fill-opacity: 0.25 !important; */
     filter: drop-shadow(0 0 6px var(--color-highlight));
     transition: all 0.3s ease;
 }
