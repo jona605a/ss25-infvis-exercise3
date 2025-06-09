@@ -135,6 +135,7 @@ function loadSVG(filename, sizeClass) {
             if (filename === "world.svg") {
                 d3.select("#mapNotice").style("display", "block");
                 d3.select("#backButton").style("display", "none");
+                d3.select("#exploreText").style("display", "none");
 
                 // remove for back button pokemon input
                 d3.select("#location_pokemon_list").html("");
@@ -207,10 +208,12 @@ function loadSVG(filename, sizeClass) {
             if (filename === "kantomap.svg") {
                 d3.select("#mapNotice").style("display", "none");
                 d3.select("#backButton").style("display", "inline-block");
+                d3.select("#exploreText").style("display", "inline-block");
 
                 d3.select("#backButton").on("click", () => {
                     loadSVG("world.svg", "small");
                     d3.select("#backButton").style("display", "none");
+                    d3.select("#exploreText").style("display", "none");
                 });
 
                 Object.keys(svgToEnglish).forEach(svgId => {

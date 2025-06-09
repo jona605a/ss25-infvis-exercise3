@@ -15,13 +15,22 @@
 </head>
 
 <body>
-    <h1>Pokémon Statistics Dashboard</h1>
+    <h1>Pokémon Exploration Dashboard</h1>
     <p style="text-align: center;">Ana Fahlböck, Jonathan Højlev, Katharina Höckner</p>
 
     <div class="dashboard">
         <!-- LEFT: All the locatons maps -->
         <div class="left-panel">
-            <button id="backButton" style="display: none;">Back to World Map</button>
+            <table style="width: 100%;">
+                <tr>
+                    <td style="text-align: left;">
+                        <button id="backButton" style="display: none;">Back to World Map</button>
+                    </td>
+                    <td style="text-align: right;">
+                        <span id="exploreText" style="display: none;">Explore where Pokémon are found. Higher opacities are more common.</span>
+                    </td>
+                </tr>
+            </table>
             <p id="mapNotice" class="map-notice" style="display: none;">
                 Note: Not all regions are available yet. Please follow the white highlights to explore the map.
             </p>
@@ -31,11 +40,6 @@
 
         <!--Histogram and other informations -->
         <div class="right-panel">
-            <!--<div id="histogram"></div> --><!-- Histogram -->
-            <!--<div id="histogram"><div class="dd_container">
-                <label for="indicator_change">Indicator:</label>
-                <select id="indicator_change" class="dropdown"></select>
-            </div>-->
             <div class="search-container">
                 <input id="searchInput" type="text" placeholder="Search Pokémon..." autocomplete="off">
                 <button onclick="searchPokemon()">Search</button>
@@ -43,21 +47,16 @@
             </div>
             <div id="pokemon_section"></div>
             <div id="tooltip" class="tooltip" style="display: none;"></div>
-            <!-- <div id="svg_line_plot" class="svg_line_plot"></div> -->
         </div>
     </div>
     <script src="{{ url_for('static', filename='js/encounter_section.js') }}"></script>
     <script src="{{ url_for('static', filename='js/pokemon_section.js') }}"></script>
-    <script src="{{url_for('static', filename='js/type_hist.js')}}"></script>
     <script src="{{ url_for('static', filename='js/search.js') }}"></script>
     <script src="{{ url_for('static', filename='js/routes.js') }}"></script>
 
     <script>
         // load world map
         loadSVG("world.svg", "small");
-
-        // draw histogramm
-        // drawHistogram();
     </script>
 
 </body>
