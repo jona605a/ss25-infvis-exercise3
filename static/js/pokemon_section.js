@@ -1,3 +1,5 @@
+const GLOBAL_STAT_MAX = 255; // based on stat limits
+
 function drawPokemonSection(pokemon) {
     if (!pokemon || !pokemon.base_stats) {
         console.warn("No stats found for", pokemon);
@@ -65,15 +67,15 @@ function drawProfile(wrapper, pokemon) {
             .text(type.toUpperCase());
     });
 
-    // get height and weight
-    type_bar.append("div")
+    // physical stats
+    const physical_stats = info_container.append("div")
         .attr("class", "physical_stats")
         .html(`Height: ${(pokemon.height / 10).toFixed(1)} m &nbsp; | &nbsp; Weight: ${(pokemon.weight / 10).toFixed(1)} kg`);
 
     // ============== COMPARISON ============
 
     const compare_container = info_container.append("div")
-        .attr("class", "compare_section");
+        .attr("class", "compare_section base_stat_pokemon_profile");
 
     compare_container.append("label")
         .text("Compare with another Pokémon:");
@@ -108,23 +110,28 @@ function drawMiniProfile(container, pokemon) {
 }
 
 function drawRadarChart(wrapper, pokemon, compare = null) {
+    // prevent duplicates
+    wrapper.selectAll(".radar_chart_container").remove();
+
     const data = pokemon.base_stats;
     const stats = Object.entries(data);
     console.log("Stats:", stats);
 
-    const width = 600;
-    const height = 600;
+    const radarChartContainer = wrapper.append("div")
+        .attr("class", "radar_chart_container");
+
+    const width = radarChartContainer.node().clientWidth;
+    const height = width;
     const levels = 5;
     const radius = 200;
     const angleSlice = (Math.PI * 2) / stats.length;
 
-    const radarChartContainer = wrapper.append("div")
-        .attr("class", "radar_chart_container");
-
     // Radar SVG
     const svg = radarChartContainer.append("svg")
-        .attr("width", width)
-        .attr("height", height)
+        .attr("viewBox", `0 0 ${width} ${height}`)
+        .attr("preserveAspectRatio", "xMidYMid meet")
+        .attr("width", "100%")
+        .attr("height", "100%")
         .attr("class", "base_stat_radar_svg");
 
     const g = svg.append("g")
@@ -182,7 +189,7 @@ function drawRadarChart(wrapper, pokemon, compare = null) {
     });
 
     // Data polygon
-    const maxValue = d3.max(stats, ([, value]) => +value);
+    const maxValue = GLOBAL_STAT_MAX;
     const points = stats.map(([_, value], i) => {
         const angle = angleSlice * i;
         const scaled = (+value) / maxValue * radius;
@@ -194,46 +201,19 @@ function drawRadarChart(wrapper, pokemon, compare = null) {
         value: value
     }));
 
-    const polygon = g.append("polygon")
-        .attr("points", points)
-        .attr("fill", getTypeColor(pokemon.types[0]))
-        .attr("stroke", "#2B2B2B")
-        .attr("stroke-width", 2)
-        .attr("fill-opacity", 0.8)
-        .style("cursor", "pointer")
-        .on("mouseover", function (event) {
-            d3.select(this)
-                .attr("fill-opacity", 1.0)
-                .attr("stroke-width", 3);
-
-            // add tooltip
-            const tooltip = d3.select("#tooltip");
-            const html = statValues.map(s =>
-                `<strong>${s.label}</strong>: ${s.value}`).join("<br>"
-                );
-            tooltip.html(html)
-                .style("left", `${event.pageX + 10}px`)
-                .style("top", `${event.pageY - 28}px`)
-                .style("opacity", 1)
-                .style("display", "block");
-        })
-        .on("mousemove", function (event) {
-            // Update position while moving
-            d3.select("#tooltip")
-                .style("left", `${event.pageX + 10}px`)
-                .style("top", `${event.pageY - 28}px`);
-        })
-        .on("mouseout", function () {
-            d3.select(this).attr("fill-opacity", 0.8);
-            d3.select("#tooltip")
-                .style("opacity", 0)
-                .attr("stroke-width", 2)
-                .style("display", "none");
-        });
+    drawStatPolygon(
+        g,
+        stats,
+        maxValue,
+        radius,
+        angleSlice,
+        getTypeColor(pokemon.types[0]),
+        statValues
+    );
 
     if (compare) {
         const compareStats = Object.entries(compare.base_stats);
-        const maxValue = d3.max([...stats, ...compareStats], ([, v]) => +v);
+        const maxValue = GLOBAL_STAT_MAX;
         const comparePoints = compareStats.map(([_, value], i) => {
             const angle = angleSlice * i;
             const scaled = (+value) / maxValue * radius;
@@ -246,35 +226,80 @@ function drawRadarChart(wrapper, pokemon, compare = null) {
             source: compare.name
         }));
 
-        g.append("polygon")
-            .attr("points", comparePoints)
-            .attr("fill", getTypeColor(compare.types[0]))
-            .attr("fill-opacity", 0.5)
-            .attr("stroke", "#222")
-            .attr("class", "polygon-compare")
+        drawStatPolygon(
+            g,
+            compareStats,
+            maxValue,
+            radius,
+            angleSlice,
+            getTypeColor(compare.types[0]),
+            statValuesCompare,
+            compare.name,
+            "polygon-compare",
+            0.5
+        );
+    }
+}
+
+function drawStatPolygon(g, stats, maxValue, radius, angleSlice, color, tooltipData = null, tooltipSource = null, className = "", opacity = 0.8) {
+    const points = stats.map(([_, value], i) => {
+        const angle = angleSlice * i;
+        const scaled = (+value) / maxValue * radius;
+        return [Math.cos(angle) * scaled, Math.sin(angle) * scaled].join(",");
+    }).join(" ");
+
+    const polygon = g.append("polygon")
+        .attr("points", points)
+        .attr("fill", color)
+        .attr("stroke", "#2B2B2B")
+        .attr("stroke-width", 2)
+        .attr("fill-opacity", opacity)
+        .attr("class", className)
+        .style("cursor", "pointer");
+
+    if (tooltipData) {
+        polygon
             .on("mouseover", function (event) {
+                d3.select(this)
+                    .attr("fill-opacity", 1.0)
+                    .attr("stroke-width", 3);
+
                 const tooltip = d3.select("#tooltip");
-                const html = statValuesCompare.map(s =>
-                    `<div><strong>${s.label}</strong>: ${s.value} (${s.source})</div>`).join("");
+                const html = `
+                <div class="tooltip_headline">${tooltipSource || "Stats"}</div>
+                    ${tooltipData.map(s =>
+                    `<strong>${s.label}</strong>: ${s.value}`
+                ).join("<br>")}
+                `;
                 tooltip.html(html)
                     .style("left", `${event.pageX + 10}px`)
                     .style("top", `${event.pageY - 28}px`)
                     .style("opacity", 1)
                     .style("display", "block");
             })
+            .on("mousemove", function (event) {
+                d3.select("#tooltip")
+                    .style("left", `${event.pageX + 10}px`)
+                    .style("top", `${event.pageY - 28}px`);
+            })
             .on("mouseout", function () {
+                d3.select(this).attr("fill-opacity", opacity).attr("stroke-width", 2);
                 d3.select("#tooltip").style("opacity", 0).style("display", "none");
             });
     }
+
+    return polygon;
 }
 
 function updateRadarChartWithComparison(primary, compare) {
-    // Remove existing radar chart SVG
-    d3.select(".base_stat_radar_svg").remove();
+    // store reference to parent
+    const parent = d3.select(".base_stat_top_row");
 
-    // Redraw chart with comparison
-    const container = d3.select(".radar_chart_container").node().parentNode;
-    drawRadarChart(d3.select(container), primary, compare);
+    // remove old radar chart container
+    parent.select(".radar_chart_container").remove();
+
+    // draw updated
+    drawRadarChart(parent, primary, compare);
 }
 
 function getTypeColor(type) {
@@ -284,10 +309,10 @@ function getTypeColor(type) {
 }
 
 function highlightPokemonRegions(pokemonName) {
-    // Clear previous highlights
+    // clear previous highlights
     d3.selectAll(".highlighted-region")
         .classed("highlighted-region", false)
-        .style("fill-opacity", null); // Reset any custom opacity
+        .style("fill-opacity", null); // reset any custom opacity
 
     const matchedRegions = locationData.filter(region =>
         region.areas.some(area =>

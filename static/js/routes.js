@@ -125,7 +125,7 @@ function showPokemonList(englishName) {
 function loadSVG(filename, sizeClass) {
     d3.xml("/static/" + filename)
         .then(data => {
-            const svgHost = d3.select("#svg_kanto_map");
+            const svgHost = d3.select("#svg_type_hist");
             svgHost.html("");
             svgHost.attr("class", "svg_wrapper " + sizeClass);
 
@@ -133,17 +133,89 @@ function loadSVG(filename, sizeClass) {
             svgHost.node().appendChild(imported);
 
             if (filename === "world.svg") {
+                d3.select("#mapNotice").style("display", "block");
+                d3.select("#backButton").style("display", "none");
+
+                // remove for back button pokemon input
+                d3.select("#location_pokemon_list").html("");
+                d3.select("#pokemon_section").html("");
+                d3.select("#svg_line_plot").html("");
+
+
                 d3.select(svgHost.node())
                     .select("#rect1")
                     .style("cursor", "pointer")
                     .on("click", () => loadSVG("kantomap.svg", "large"));
             }
 
+            const rect = d3.select(svgHost.node()).select("#rect1");
+
+            if (!rect.empty()) {
+                const bbox = rect.node().getBBox();
+                const s = 10;
+
+                // 4 corners: [x, y, dx, dy] for horizontal and vertical lines
+                const cornerDefs = [
+                    // top-left: right (horizontal), down (vertical)
+                    { x: bbox.x, y: bbox.y, dxH: 1, dyH: 0, dxV: 0, dyV: 1 },
+                    // top-right: left (horizontal), down (vertical)
+                    { x: bbox.x + bbox.width, y: bbox.y, dxH: -1, dyH: 0, dxV: 0, dyV: 1 },
+                    // bottom-left:right (horizontal), up (vertical)
+                    { x: bbox.x, y: bbox.y + bbox.height, dxH: 1, dyH: 0, dxV: 0, dyV: -1 },
+                    // bottom-right:left (horizontal), up (vertical)
+                    { x: bbox.x + bbox.width, y: bbox.y + bbox.height, dxH: -1, dyH: 0, dxV: 0, dyV: -1 },
+                ];
+
+                const group = d3.select(rect.node().parentNode)
+                    .append("g")
+                    .attr("class", "corner-markers");
+
+                function animateLine(line, x1, y1, dx, dy) {
+                    d3.interval((elapsed) => {
+                        const t = Math.sin(elapsed / 400);
+                        const x2 = x1 + dx * s * (1 + 0.3 * t);
+                        const y2 = y1 + dy * s * (1 + 0.3 * t);
+                        line.attr("x2", x2).attr("y2", y2);
+                    }, 40);
+                }
+
+                cornerDefs.forEach(c => {
+                    // horicontal line
+                    const h = group.append("line")
+                        .attr("x1", c.x)
+                        .attr("y1", c.y)
+                        .attr("x2", c.x + c.dxH * s)
+                        .attr("y2", c.y + c.dyH * s)
+                        .attr("class", "corner-marker");
+
+                    // vertical line
+                    const v = group.append("line")
+                        .attr("x1", c.x)
+                        .attr("y1", c.y)
+                        .attr("x2", c.x + c.dxV * s)
+                        .attr("y2", c.y + c.dyV * s)
+                        .attr("class", "corner-marker");
+
+                    animateLine(h, c.x, c.y, c.dxH, c.dyH);
+                    animateLine(v, c.x, c.y, c.dxV, c.dyV);
+                });
+
+                rect.style("cursor", "pointer")
+                    .on("click", () => loadSVG("kantomap.svg", "large"));
+            }
+
             if (filename === "kantomap.svg") {
-                const svgRoot = d3.select(svgHost.node()).select("svg");
+                d3.select("#mapNotice").style("display", "none");
+                d3.select("#backButton").style("display", "inline-block");
+
+                d3.select("#backButton").on("click", () => {
+                    loadSVG("world.svg", "small");
+                    d3.select("#backButton").style("display", "none");
+                });
 
                 Object.keys(svgToEnglish).forEach(svgId => {
-                    const region = svgRoot.select("#" + svgId);
+                    const svgRoot = d3.select(svgHost.node()).select("svg");
+                    const region = d3.select(svgHost.node()).select("#" + svgId);
 
                     if (!region.empty()) {
                         region
@@ -151,9 +223,12 @@ function loadSVG(filename, sizeClass) {
                             .style("cursor", "pointer")
                             .on("click", () => {
                                 const englishName = svgToEnglish[svgId];
+                                console.log("svg id", svgId);
+                                console.log("name in dataset", englishName);
+
                                 const regionData = locationData.find(r => r.name === englishName);
-                                // Debug, print the region data
-                                console.log("Clicked region:", englishName, regionData);
+
+
                                 if (!regionData) {
                                     console.warn("No data in locationData for ", englishName);
                                 } else {
@@ -162,10 +237,11 @@ function loadSVG(filename, sizeClass) {
 
                                 showPokemonList(englishName);
                             });
+                    } else {
+                        console.warn("Region with the ID ", svgId, "no in svg");
                     }
                 });
             }
-
 
         })
         .catch(error => console.error("Error while loading svg:", error));
